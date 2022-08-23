@@ -13,11 +13,12 @@ def check_domains(x, min_values, max_values, d):
             
     return x
 
-def simulatedAnealing(func, search_space, initial_point):
+def simulatedAnealing(func, search_space, initial_point, initial_temperature = 10):
     """
     func - function to minimize
     search_space : The domain of search [[min value, max_value],,....,d]
     initial_point: Initial point to strat from (size of the state space) \in R^d [x_1,...,x_d]
+    initial_temperature -> The initial temperature value 
     """
     d = len(initial_point)
     state = np.asarray(initial_point)
@@ -30,7 +31,7 @@ def simulatedAnealing(func, search_space, initial_point):
         
     best_solution_found = sys.maxsize
     best_point = None
-    T = 10
+    T = initial_temperature
     val  = func(state)
     sigma = 1.
     alpha = 0.8
