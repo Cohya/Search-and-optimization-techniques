@@ -156,8 +156,11 @@ class Genetic_algorithm():
         if self.options['technique'] == 'RankingSelection':
             beta = 0 # can be selected from [0,2] # 0 be proporation to the rank 2 is for the opposite 
             
-            probs_rank = np.arange(self.population_size) + 1
-            
+            if self.operation == 'maximization':
+                probs_rank = np.arange(self.population_size) + 1
+            else:
+                probs_rank = np.arange(self.population_size,0, -1)
+                
             probs = 1/self.population_size * (beta - 2* (beta -1) * (probs_rank  -1)/(self.population_size-1)) 
             
             

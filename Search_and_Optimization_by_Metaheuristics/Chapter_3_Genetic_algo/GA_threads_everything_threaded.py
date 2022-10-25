@@ -14,12 +14,15 @@ mutex = Lock()
 
             
 class Genetic_algorithm():
-    def __init__(self, initialization_function = None):
+    def __init__(self, initialization_function = None, options = {}):
 
         self.initialization = initialization_function
         
-    
-    
+        self.options = options
+        
+        self.options['technique'] = self.options.get('technique','RoulleteWheel')
+        
+        
     def create_chromosome(self):
         chromosome = []
         for i in range(self.number_of_genes):
@@ -110,12 +113,13 @@ class Genetic_algorithm():
         # print(population, type(population), vals, type(vals))
         if self.operation == 'maximization':
             elists = list(old_pop[-amount_of_elits:])
-            probs = vals
+            #probs = vals
 
         else:
 
             elists = list(old_pop[:amount_of_elits])
-            probs = [-value_i for value_i in vals]
+        probs = vals           
+       #probs = [-value_i for value_i in vals]
         # eps should decrease with time steps 
 
         new_population = list(elists) 
@@ -145,6 +149,26 @@ class Genetic_algorithm():
         sum_vals = np.sum(vals)
         probs = [val / sum_vals for val in vals] 
         
+        if self.operation == 'maximization':
+            pass
+        else:
+            probs1 = [1 - p for p in probs]
+            sum_p = sum(probs1) 
+            probs = [p / sum_p for p in probs1]
+            
+ 
+        if self.options['technique'] == 'RankingSelection':
+            beta = 0 # can be selected from [0,2] # 0 be proporation to the rank 2 is for the opposite 
+            
+            if self.operation == 'maximization':
+                probs_rank = np.arange(self.population_size) + 1
+            else:
+                probs_rank = np.arange(self.population_size,0, -1)
+                
+                
+            probs = 1/self.population_size * (beta - 2* (beta -1) * (probs_rank  -1)/(self.population_size-1)) 
+            
+            
         self.cross_over_list = []
         t_list = []
         for i in range(amount_of_crossover):
@@ -287,10 +311,13 @@ if __name__ =='__main__':
 
     t0 = time.time()
     ga = Genetic_algorithm()
+    options = {}
+    options['technique'] = 'RankingSelection'
+    ga = Genetic_algorithm(options=options)
     pop, val, best_res, best_solution, all_results = ga.optimize(parameters_types = ['continouse','continouse', 'continouse'],
                                                                  search_range = [[-5,5],[-100,100], [-100,100]],
-                                                                 fitness_fucntion=func , population_size =100, 
-                                                                 operation = 'maximization', max_iteration= 600,
+                                                                 fitness_fucntion=func , population_size =50, 
+                                                                 operation = 'maximization', max_iteration= 100,
                                                                  verbose = False)
     # print("res:", val)#, best_res, best_solution)
     print("Time:", time.time() - t0)
