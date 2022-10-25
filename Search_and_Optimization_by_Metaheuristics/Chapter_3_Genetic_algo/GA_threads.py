@@ -14,11 +14,15 @@ mutex = Lock()
 
             
 class Genetic_algorithm():
-    def __init__(self, initialization_function = None):
+    def __init__(self, initialization_function = None, options = {}):
 
         self.initialization = initialization_function
         
-    
+        self.options = options
+        
+        self.options['technique'] = self.options.get('technique','RoulleteWheel')
+        
+        
     
     def create_chromosome(self):
         chromosome = []
@@ -110,14 +114,14 @@ class Genetic_algorithm():
         # print(population, type(population), vals, type(vals))
         if self.operation == 'maximization':
             elists = list(old_pop[-amount_of_elits:])
-            probs = vals
-
+           
         else:
-
             elists = list(old_pop[:amount_of_elits])
-            probs = [-value_i for value_i in vals]
+            
+        probs = vals
+            # probs = [-value_i for value_i in vals]
         # eps should decrease with time steps 
-
+        
         new_population = list(elists) 
         self.mutations = []
 
@@ -126,8 +130,9 @@ class Genetic_algorithm():
             self.mutations.append(mutant)
         
 
-        crossovers = self.create_cross_over(population, probs, amount_of_crossover)
-        
+        crossovers = self.create_crossover(population, probs, amount_of_crossover)
+
+            
         
         # concatante 
         new_population += list(self.mutations) 
@@ -135,13 +140,30 @@ class Genetic_algorithm():
 
         return new_population
     
-    def create_cross_over(self, population, vals, amount_of_crossover):
+    
+    def create_crossover(self, population, vals, amount_of_crossover):
         n = self.population_size
         sum_vals = np.sum(vals)
         probs = [val / sum_vals for val in vals] 
+ 
+        if self.operation == 'maximization':
+            pass
+        else:
+            probs1 = [1 - p for p in probs]
+            sum_p = sum(probs1) 
+            probs = [p / sum_p for p in probs1]
+ 
+        if self.options['technique'] == 'RankingSelection':
+            beta = 0 # can be selected from [0,2] # 0 be proporation to the rank 2 is for the opposite 
+            
+            probs_rank = np.arange(self.population_size) + 1
+            
+            probs = 1/self.population_size * (beta - 2* (beta -1) * (probs_rank  -1)/(self.population_size-1)) 
+            
+            
         
         cross_over_list = []
- 
+        
         for i in range(amount_of_crossover):
             # time.sleep(3)
             indexs = np.random.choice(n, size = 2, p = probs, replace = False)
@@ -206,6 +228,7 @@ class Genetic_algorithm():
         self.number_of_genes = len(parameters_types)
         self.search_range = search_range
         self.operation = operation
+        self.population_size = population_size
         
         if operation == 'maximization':
             self.best_result = -sys.maxsize
@@ -254,8 +277,8 @@ class Genetic_algorithm():
                 
             if (self.step) % 50 == 0 and verbose == True:
                 print("Iteration:", self.step, "Best result:", self.best_result, "Best chromosome:", self.best_chromosome)            
-                # for i, j in zip(population, self.vals):
-                #     print("Pop:", i, "value:", j)
+                for i, j in zip(population, self.vals):
+                    print("Pop:", i, "value:", j)
             self.step += 1
       
         
@@ -273,16 +296,18 @@ class Genetic_algorithm():
 def func(x):
 
     y = (x[0])**2 + (x[1])**2 + (x[2])**2
-    return  -y  
+    return - y  
 
 if __name__ =='__main__':
 
     t0 = time.time()
-    ga = Genetic_algorithm()
+    options = {}
+    options['technique'] = 'RankingSelection'
+    ga = Genetic_algorithm(options=options)
     pop, val, best_res, best_solution, all_results = ga.optimize(parameters_types = ['continouse','continouse', 'continouse'],
                                                                  search_range = [[-5,5],[-100,100], [-100,100]],
-                                                                 fitness_fucntion=func , population_size =100, 
-                                                                 operation = 'maximization', max_iteration= 600 ,
+                                                                 fitness_fucntion=func , population_size =10, 
+                                                                 operation = 'maximization', max_iteration = 600,
                                                                  verbose= False)
     # print("res:", val)#, best_res, best_solution)
     print("Time:", time.time() - t0)
