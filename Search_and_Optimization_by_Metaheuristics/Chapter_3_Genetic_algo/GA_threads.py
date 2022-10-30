@@ -5,9 +5,7 @@ from threading import Thread, Lock
 import pickle 
 import os 
 import sys 
-import matplotlib.pyplot as plt  
-from scipy.stats import truncnorm 
-import time 
+
 
 """With mutex 183 sec for simple function x1**2 + x2**2 + x3**2, without 150 sec"""
 mutex = Lock()
@@ -296,29 +294,29 @@ class Genetic_algorithm():
         self.vals[i] = value
         mutex.release()
            
-def func(x):
+# def func(x):
+#     x = tf.convert_to_tensor(x)
+#     y = tf.math.square(x[0]) + (x[1])**2 + (x[2])**2
+#     return - y  
 
-    y = (x[0])**2 + (x[1])**2 + (x[2])**2
-    return - y  
+# if __name__ =='__main__':
 
-if __name__ =='__main__':
-
-    t0 = time.time()
-    options = {}
-    options['technique'] = 'RankingSelection'
-    ga = Genetic_algorithm(options=options)
-    pop, val, best_res, best_solution, all_results = ga.optimize(parameters_types = ['continouse','continouse', 'continouse'],
-                                                                 search_range = [[-5,5],[-100,100], [-100,100]],
-                                                                 fitness_fucntion=func , population_size =10, 
-                                                                 operation = 'maximization', max_iteration = 600,
-                                                                 verbose= False)
-    # print("res:", val)#, best_res, best_solution)
-    print("Time:", time.time() - t0)
-    print("Best Solution:", best_solution)
-    plt.figure()
-    plt.plot(all_results)
-    plt.show()
+#     t0 = time.time()
+#     options = {}
+#     options['technique'] = 'RankingSelection'
+#     ga = Genetic_algorithm(options=options)
+#     pop, val, best_res, best_solution, all_results = ga.optimize(parameters_types = ['continouse','continouse', 'continouse'],
+#                                                                  search_range = [[-5,5],[-100,100], [-100,100]],
+#                                                                  fitness_fucntion=func , population_size =10, 
+#                                                                  operation = 'maximization', max_iteration = 600,
+#                                                                  verbose= False)
+#     # print("res:", val)#, best_res, best_solution)
+#     print("Time:", time.time() - t0)
+#     print("Best Solution:", best_solution)
+#     plt.figure()
+#     plt.plot(all_results)
+#     plt.show()
     
-    # print("all results:", all_results)
+#     # print("all results:", all_results)
             
     
