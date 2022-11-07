@@ -6,7 +6,7 @@ import pickle
 import os 
 import sys 
 
-import time
+
 """With mutex 183 sec for simple function x1**2 + x2**2 + x3**2, without 150 sec"""
 mutex = Lock()
 
@@ -224,7 +224,6 @@ class Genetic_algorithm():
     
 
         """
-        t0 = time.time()
         self.fitness_fucntion = fitness_fucntion
         self.parameters = parameters_types
         self.number_of_genes = len(parameters_types)
@@ -258,8 +257,6 @@ class Genetic_algorithm():
         
         while self.step <= self.max_iteration:
         # Activate the workers
-            if self.step%5 == 0:
-                print("Generation:", self.step)
             self.last_population = population.copy()
             # self.last_vals = self.vals.copy()
             if self.step > 2:
@@ -279,31 +276,14 @@ class Genetic_algorithm():
             for worker in workers:
                 worker.join()
                 
-            if (self.step) % 10 == 0 and verbose == True:
+            if (self.step) % 50 == 0 and verbose == True:
                 print("Iteration:", self.step, "Best result:", self.best_result, "Best chromosome:", self.best_chromosome)            
                 for i, j in zip(population, self.vals):
                     print("Pop:", i, "value:", j)
             self.step += 1
-            
-            
-            
-            if self.step == 2:   
-                vals = self.vals
-                vals, population,ids = zip(*sorted(zip(vals,population,ids), key = lambda x: x[0]))
-                vals = list(vals)
-                population = list(population)
-                ids = list(ids)
-                #Update best result
-                
-                if self.operation == 'maximization':
-                    if vals[-1] > self.best_result:
-                        self.best_result = vals[-1]
-                        self.best_chromosome = population[-1]
-                else:
-                    if vals[0] < self.best_result:
-                        self.best_result = vals[0]
-                        self.best_chromosome = population[0]
-        print("Time:", time.time() - t0)
+      
+        
+        
         return self.last_population, self.vals, self.best_result, self.best_chromosome, self.all_results
         
     def worker(self, data, i):
