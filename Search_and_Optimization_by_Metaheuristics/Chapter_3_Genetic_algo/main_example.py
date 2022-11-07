@@ -16,13 +16,15 @@ if __name__ =='__main__':
     
     t0 = time.time()
     ga = Genetic_algorithm()
+    options = {"technique": 'RankingSelection'}
     pop, val, best_res, best_solution, all_results = ga.optimize(parameters_types = ['continouse','continouse', 'continouse'],
-                                                                 search_range = [[-5,5],[-100,100], [-100,100]],
+                                                                 search_range = [[-5,5],[-5,5], [-5,5]],
                                                                  fitness_fucntion=func , population_size = 100, 
                                                                  operation = 'maximization', max_iteration= 600,
                                                                  verbose = False)
     # print("res:", val)#, best_res, best_solution)
     print("Time:", time.time() - t0)
+    print("best solution:",  best_solution)
     plt.figure()
     plt.plot(all_results)
     plt.show()
