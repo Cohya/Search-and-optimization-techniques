@@ -262,7 +262,7 @@ class Genetic_algorithm():
                 print("Generation:", self.step)
             self.last_population = population.copy()
             # self.last_vals = self.vals.copy()
-            if self.step > 2:
+            if self.step >= 2:
                 # old_best_res = float(self.best_result)
                 population = self.update_population(population,self.vals,ids, 
                                                     eps = self.udate_eps(eps,self.step), 
